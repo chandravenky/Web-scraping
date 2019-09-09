@@ -1,0 +1,61 @@
+
+
+import requests as rq
+import bs4 as bs
+import lxml as ll
+res= rq.get('https://belk.pissedconsumer.com/review.html')
+type(res)
+res.text
+soup = bs.BeautifulSoup(res.text, 'lxml')
+type(soup)
+
+headers = soup.find_all('h2', {'class':'f-component-title review-item-title'})
+headings = list(map(lambda h: h.text.strip(), headers))
+
+headings
+
+text = soup.find_all('div', {'class':'overflow-text'})
+text = list(map(lambda h: h.text.strip(), text))
+
+
+#Grabbing topics
+
+import time
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+import bs4 as bs
+from bs4 import BeautifulSoup as bs
+
+browser = webdriver.Chrome()
+
+url=browser.get("https://belk.pissedconsumer.com/review.html")
+
+lenOfPage = browser.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
+match=False
+while(match==False):
+    lastCount = lenOfPage
+    time.sleep(3)
+    lenOfPage = browser.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
+    if lastCount==lenOfPage:
+        match=True
+
+		
+source_data = browser.page_source
+
+bs_data = bs(source_data)
+
+headers = bs_data.find_all('h2', {'class':'f-component-title review-item-title'})
+headings = list(map(lambda h: h.text.strip(), headers))
+
+headings
+
+text = bs_data.find_all('div', {'class':'overflow-text'})
+text = list(map(lambda h: h.text.strip(), text))
+text
+
+topics_belk = pd.DataFrame({'Topics':headings, 'Comments':text})
+
+topics_belk.to_csv('Belk_selenium_output.csv', sep=',')
+
+
